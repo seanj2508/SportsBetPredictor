@@ -1,0 +1,8 @@
+*.csv
+*.pkl
+*.pth
+wnba_bets_log.json
+wnba_bias_log.json
+nba_bets_log.json
+__pycache__/
+.ipynb_checkpoints/
