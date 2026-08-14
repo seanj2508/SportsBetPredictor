@@ -2,19 +2,15 @@
 
 A PyTorch multi-output neural network predicting NBA and WNBA player prop outcomes across 72,000+ game logs and 57 engineered features. The pipeline pulls real-time DraftKings lines via The Odds API, calculates expected value on every available prop, and surfaces only statistically favorable wagers above a 20% edge threshold.
 
-Across 400+ live tracked outcomes, high-conviction bets achieved a **56.7% win rate** against a 52.4% breakeven — confirmed by a 12-point gap versus unfiltered bets.
+Across 400+ live tracked outcomes, high-conviction bets achieved a **56.7% win rate** against a 52.4% breakeven, confirmed by a 12-point gap versus unfiltered bets.
 
 ![Live Output](screenshot.png)
 
----
-
 ## How It Works
 
-The model outputs six simultaneous stat distributions — points, rebounds, assists, blocks, steals, and threes — parameterized as (μ, σ) pairs using a negative log-likelihood loss. At inference time, predicted probabilities are compared against live bookmaker lines to compute edge: the difference between the model's estimated probability and the breakeven probability implied by the juice. Only bets above the edge threshold are recommended.
+The model outputs six simultaneous stat distributions (points, rebounds, assists, blocks, steals, and threes) parameterized as (μ, σ) pairs using a negative log-likelihood loss. At inference time, predicted probabilities are compared against live bookmaker lines to compute edge: the difference between the model's estimated probability and the breakeven probability implied by the juice. Only bets above the edge threshold are recommended.
 
-A key architectural decision was matching opponent context dynamically at inference time. Rather than using features from whoever the player last faced, the prediction function injects live defensive ratings, pace, opponent-vs-position stats, and head-to-head history specific to tonight's actual matchup — fixing a subtle leakage that was distorting edge calculations.
-
----
+A key architectural decision was matching opponent context dynamically at inference time. Rather than using features from whoever the player last faced, the prediction function injects live defensive ratings, pace, opponent-vs-position stats, and head-to-head history specific to tonight's actual matchup, fixing a subtle leakage that was distorting edge calculations.
 
 ## Pipeline Structure
 
@@ -29,8 +25,6 @@ WNBA_Model.ipynb                    WNBA model training via transfer learning
 WNBA_Ev_Calculator.ipynb            WNBA EV calculator
 WNBA_Live_Pipeline.ipynb            WNBA live pipeline with real-time inference
 ```
-
----
 
 ## Features
 
@@ -52,8 +46,6 @@ Rolling standard deviation and coefficient of variation for points and rebounds
 **Situational**
 Home/away, days rest, rookie season flag, games played counter
 
----
-
 ## Model Architecture
 
 ```
@@ -72,8 +64,6 @@ Optimizer: Adam, lr=5e-4, weight_decay=1e-4
 **NBA:** 56,985 game logs, 51 features, val loss 1.9788
 **WNBA:** 15,882 game logs, 57 features, val loss 1.8788 (after H2H feature addition)
 
----
-
 ## Live Pipeline
 
 The daily workflow runs entirely from the live pipeline notebooks:
@@ -91,8 +81,6 @@ After games finish      Auto-update results from NBA API box scores
 
 Bets are split into **placed** (above 20% edge threshold) and **tracking only** (5-20% edge), with separate performance summaries so lower-conviction bets accumulate data without affecting real P&L.
 
----
-
 ## Calibration and Bias Monitoring
 
 A rolling nightly bias tracker logs the gap between raw model predictions and market lines across all four betting stats. Calibration offsets are tuned based on the average remaining gap across multiple nights rather than reacting to any single slate, preventing overcorrection on small samples.
@@ -105,15 +93,13 @@ Current offsets:
   FG3M  +0.1
 ```
 
----
-
 ## Results
 
 | Filter | Bets | Win Rate |
 |--------|------|----------|
 | Placed (20%+ edge) | 60 | 56.7% |
 | Tracking only (<20% edge) | 367 | 44.7% |
-| Breakeven at -110 juice | — | 52.4% |
+| Breakeven at -110 juice | N/A | 52.4% |
 
 By stat (placed bets):
 
@@ -124,13 +110,9 @@ By stat (placed bets):
 | REB | 50% | 8 |
 | FG3M | 40% | 5 |
 
----
-
 ## Tech Stack
 
 Python, PyTorch, scikit-learn, pandas, NumPy, SciPy, NBA API, The Odds API, ESPN API, Jupyter
-
----
 
 ## Notes
 
